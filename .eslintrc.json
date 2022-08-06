@@ -14,9 +14,11 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["prettier"],
+  "plugins": ["prettier", "react"],
   "rules": {
     "prettier/prettier": "error",
+    "react/prop-types": "off",
+    "consistent-return": "off",
     "quotes": ["error", "single"],
     "linebreak-style": ["error", "windows"],
     "import/export": 0,
