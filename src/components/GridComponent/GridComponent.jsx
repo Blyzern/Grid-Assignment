@@ -14,7 +14,9 @@ import {
   Inject,
 } from '@syncfusion/ej2-react-grids';
 import { isEmpty, debounce } from 'lodash';
-import { childGridOptions, filterOptions, customButtonConfig } from './config';
+import { childGridOptions, filterOptions, columnConfig } from './config';
+import { useSelector } from 'react-redux';
+import { isLoadingSelector } from '../../Pages/Home/store/homeSelectors';
 import { fetchWrapper } from '../../utils/fetchWrapper';
 import MaleIcon from '../../icons/maleIcon';
 import FemaleIcon from '../../icons/femaleIcon';
@@ -25,35 +27,14 @@ const nullValuePlaceholder = '--';
 export const CustomGrid = ({ data }) => {
   let grid = null;
 
+  const isLoading = useSelector(isLoadingSelector);
+
   const genderTemplate = (props) => {
     const isGenderNull = props?.Gender === null;
     if (!isGenderNull) {
       return props?.Gender === 'Male' ? <MaleIcon /> : <FemaleIcon />;
     }
     return nullValuePlaceholder;
-  };
-
-  const childGridOptions = {
-    columns: [
-      {
-        field: 'Emails',
-        headerText: 'Emails',
-        width: '100',
-        textAlign: 'Left',
-      },
-    ],
-    dataSource: data,
-    editSettings: {
-      allowEditing: true,
-      allowAdding: true,
-      allowDeleting: true,
-      mode: 'Dialog',
-    },
-    queryString: 'Emails',
-  };
-
-  const filterOptions = {
-    type: 'CheckBox',
   };
 
   const accessor = (field, props) => {
@@ -83,11 +64,14 @@ export const CustomGrid = ({ data }) => {
     grid.dataSource = newData.data.value;
     grid.refresh();
   }, 1000);
-  // <CustomButton onClick={maleFilter}>Male Filter</CustomButton>
+  <CustomButton onClick={maleFilter}>Male Filter</CustomButton>;
 
-  return (
+  return isLoading ? (
+    <h1>Loading...</h1>
+  ) : (
     <div style={{ margin: '10%', marginTop: '5%' }}>
       <CustoToolBar>
+        <CustomButton onClick={maleFilter}>Male Filter</CustomButton>
         <CustomButton onClick={femaleFilter}>Female Filter</CustomButton>
         <CustomButton onClick={deleteOdds}>Delete Odds</CustomButton>
         <CustomButton onClick={debounceFunction}>Debounce</CustomButton>
@@ -107,56 +91,31 @@ export const CustomGrid = ({ data }) => {
           allowDeleting: true,
         }}
         filterSettings={filterOptions}
-        childGrid={childGridOptions}
+        childGrid={childGridOptions(data)}
         toolbar={['Add', 'ColumnChooser']}
         showColumnChooser="true"
         emptyrow="--"
       >
         <ColumnsDirective>
-          <ColumnDirective
-            field="UserName"
-            headerText="User Name"
-            width="50"
-            textAlign="Left"
-            valueAccessor={accessor}
-          />
-          <ColumnDirective
-            field="FirstName"
-            headerText="First Name"
-            width="50"
-            textAlign="Left"
-            valueAccessor={accessor}
-          />
-          <ColumnDirective
-            field="LastName"
-            headerText="Last Name"
-            width="50"
-            textAlign="Left"
-            valueAccessor={accessor}
-          />
-          <ColumnDirective
-            field="Gender"
-            headerText="Gender"
-            width="40"
-            textAlign="Left"
-            valueAccessor={accessor}
-            template={genderTemplate}
-          />
-          <ColumnDirective
-            field="Age"
-            headerText="Age"
-            width="40"
-            textAlign="Left"
-            valueAccessor={accessor}
-          />
-          <ColumnDirective
-            field="Emails"
-            headerText="Emails"
-            width="100"
-            textAlign="Left"
-            format="C2"
-            valueAccessor={accessor}
-          />
+          {columnConfig({ accessor, genderTemplate }).map(
+            ({
+              field,
+              headerText,
+              textAlign,
+              width,
+              valueAccessor,
+              template,
+            }) => (
+              <ColumnDirective
+                field={field}
+                headerText={headerText}
+                width={width}
+                textAlign={textAlign}
+                valueAccessor={valueAccessor}
+                template={template}
+              />
+            )
+          )}
         </ColumnsDirective>
         <Inject
           services={[
