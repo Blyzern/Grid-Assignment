@@ -14,11 +14,10 @@ import {
   Inject,
 } from '@syncfusion/ej2-react-grids';
 import { isEmpty, debounce } from 'lodash';
-import { childGridOptions, filterOptions, columnConfig } from './config';
 import { useSelector, useDispatch } from 'react-redux';
+import { childGridOptions, filterOptions, columnConfig } from './config';
 import { isLoadingSelector } from '../../Pages/Home/store/homeSelectors';
 import { getData } from '../../Pages/Home/store/homeSlice';
-import { fetchWrapper } from '../../utils/fetchWrapper';
 import MaleIcon from '../../icons/maleIcon';
 import FemaleIcon from '../../icons/femaleIcon';
 import { CustomButton, CustoToolBar } from './styles';

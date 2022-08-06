@@ -1,8 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { HistoryRouter as Router } from 'redux-first-history/rr6';
-import { store, history } from './app/store';
+import { store } from './app/store';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -12,9 +11,7 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <Router history={history}>
-        <App />
-      </Router>
+      <App />
     </Provider>
   </React.StrictMode>
 );
