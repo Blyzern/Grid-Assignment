@@ -15,8 +15,9 @@ import {
 } from '@syncfusion/ej2-react-grids';
 import { isEmpty, debounce } from 'lodash';
 import { childGridOptions, filterOptions, columnConfig } from './config';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { isLoadingSelector } from '../../Pages/Home/store/homeSelectors';
+import { getData } from '../../Pages/Home/store/homeSlice';
 import { fetchWrapper } from '../../utils/fetchWrapper';
 import MaleIcon from '../../icons/maleIcon';
 import FemaleIcon from '../../icons/femaleIcon';
@@ -26,6 +27,7 @@ const nullValuePlaceholder = '--';
 
 export const CustomGrid = ({ data }) => {
   let grid = null;
+  const dispatch = useDispatch();
 
   const isLoading = useSelector(isLoadingSelector);
 
@@ -57,14 +59,9 @@ export const CustomGrid = ({ data }) => {
     grid.refresh();
   };
 
-  const debounceFunction = debounce(async () => {
-    const endpoint =
-      'https://services.odata.org/TripPinRESTierService/(S(hespbvdrrmhquk5vqlzcpbro))/People';
-    const newData = await fetchWrapper(endpoint, 'GET');
-    grid.dataSource = newData.data.value;
-    grid.refresh();
+  const debounceFunction = debounce(() => {
+    dispatch(getData());
   }, 1000);
-  <CustomButton onClick={maleFilter}>Male Filter</CustomButton>;
 
   return isLoading ? (
     <h1>Loading...</h1>
@@ -98,15 +95,12 @@ export const CustomGrid = ({ data }) => {
       >
         <ColumnsDirective>
           {columnConfig({ accessor, genderTemplate }).map(
-            ({
-              field,
-              headerText,
-              textAlign,
-              width,
-              valueAccessor,
-              template,
-            }) => (
+            (
+              { field, headerText, textAlign, width, valueAccessor, template },
+              index
+            ) => (
               <ColumnDirective
+                key={`column-${index}`}
                 field={field}
                 headerText={headerText}
                 width={width}
